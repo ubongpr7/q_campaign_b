@@ -1,0 +1,15 @@
+services:
+  web:
+    image: ubongpr7/quick_backend:latest
+    env_file:
+      - .env
+    command: >
+      sh -c "
+        python3.12 manage.py makemigrations &&
+        python3.12 manage.py migrate &&
+        python3.12 manage.py runserver 0.0.0.0:8000
+      "
+    volumes:
+      - .:/app 
+    ports:
+      - "8000:8000"
