@@ -1,15 +1,32 @@
+version: '3.8'
+
 services:
   web:
-    image: ubongpr7/quick_backend:latest
-    env_file:
-      - .env
+    build: .
+    env_file: .env  # Load all variables from .env
     command: >
-      sh -c "
-        python3.12 manage.py makemigrations &&
-        python3.12 manage.py migrate &&
-        python3.12 manage.py runserver 0.0.0.0:8000
-      "
+      sh -c "python manage.py makemigrations &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
     volumes:
-      - .:/app 
+      - .:/app
     ports:
       - "8000:8000"
+    depends_on:
+      - db
+    # Remove individual environment variables (already loaded via env_file)
+
+  db:
+    image: postgres:14
+    env_file: .env  # Load all variables from .env
+    environment:
+      - POSTGRES_DB=${DB_NAME}       # Map .env's DB_NAME to POSTGRES_DB
+      - POSTGRES_USER=${DB_USER}     # Map .env's DB_USER to POSTGRES_USER
+      - POSTGRES_PASSWORD=${DB_PASSWORD}  # Map .env's DB_PASSWORD to POSTGRES_PASSWORD
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:

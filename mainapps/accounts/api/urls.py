@@ -13,4 +13,4 @@ urlpatterns=[
     path("register/",RegistrationAPI.as_view(),name="register"),
     path("token/",TokenGenerator.as_view(),name="token"),
     path("api_route/",ge_route,name="api_route"),
-    ]
+]
