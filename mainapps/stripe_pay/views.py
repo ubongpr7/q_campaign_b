@@ -239,10 +239,10 @@ def subscribe(request, price_id):
 
       checkout_session = stripe.checkout.Session.create(
         customer=customer,
-        success_url=settings.DOMAIN + success_path +
+        success_url=success_path +
         ('&' if '?' in success_path else '?')
         + 'session_id={CHECKOUT_SESSION_ID}',
-        cancel_url=settings.DOMAIN + cancel_path,
+        cancel_url=cancel_path,
         payment_method_types=['card'],
         mode='subscription',
         line_items=[{
