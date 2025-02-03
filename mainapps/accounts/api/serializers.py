@@ -86,7 +86,7 @@ class ProfilePictureUpdateSerializer(serializers.ModelSerializer):
         model = get_user_model()
         fields = ['picture']
 
-
+stripe.api_key=settings.STRIPE_SEC_KEY
 class UserSignUpSerializer(serializers.ModelSerializer):
     sessionId = serializers.CharField(required=False, allow_blank=True)
 
@@ -104,7 +104,7 @@ class UserSignUpSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         sessionId = validated_data.pop("sessionId", None)
         user = User.objects.create_user(**validated_data)
-
+    
         if not sessionId:
             free_plan = Plan.objects.get(id=3)
             customer = stripe.Customer.create(email=user.email, name=user.first_name)
