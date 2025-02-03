@@ -1,3 +1,4 @@
+from django.core.mail import send_mail
 from email.message import EmailMessage
 import threading    
 from django.conf import settings
@@ -24,6 +25,17 @@ def send_html_email(subject, message, from_email, to_email,html_file):
     EmailThread(msg).start()
 
 
+
+def send_html_email2(
+  subject, message, from_email, to_email, html_file, context
+):
+  html_content = render_to_string(html_file, context)
+
+  text_content = strip_tags(html_content)
+
+  send_mail(
+    subject, text_content, from_email, [to_email], html_message=html_content
+  )
 
 def send_confirmation_email(email, name):
   # HTML email content

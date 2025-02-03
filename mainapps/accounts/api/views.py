@@ -45,7 +45,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from mainapps.accounts.models import User
-from mainapps.accounts.utils import send_confirmation_email, send_html_email
+from mainapps.accounts.utils import send_confirmation_email, send_html_email2
 from mainapps.ads_manager.models import Ad
 from mainapps.stripe_pay.models import Plan, StripeCustomer, Subscription
 from .serializers import *
@@ -156,7 +156,7 @@ class SignUpView(generics.CreateAPIView):
 
             # Send verification email **ONLY IF session_id is missing**
             if not request.data.get("sessionId"):
-                send_html_email(
+                send_html_email2(
                     subject="Welcome to QuickCampaign.io – Verify Your Email",
                     message=None,
                     from_email=settings.EMAIL_HOST_USER,
