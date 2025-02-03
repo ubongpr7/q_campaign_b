@@ -41,6 +41,10 @@ INSTALLED_APPS.extend(THIRD_PARTY_APPS)
 
 MAIN_APPS=[
     'mainapps.accounts',
+    'mainapps.ads_manager',
+    'mainapps.targeting',
+    'mainapps.stripe_pay',
+
     ]
 INSTALLED_APPS.extend(MAIN_APPS)
 
@@ -106,16 +110,10 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "OPTIONS": {
+            "min_length": 6,
+        },
     },
 ]
 AUTHENTICATION_BACKENDS = [
@@ -151,7 +149,7 @@ DJOSER = {
     'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS':os.getenv('SOCIAL_AUTH_ALLOWED_REDIRECT_URIS').split(',')
 }
 DOMAIN=''
-SITE_NAME='Sofire'
+SITE_NAME='FC'
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -167,21 +165,16 @@ STATIC_ROOT=BASE_DIR/ 'staticfiles_build' / 'static'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-EMAIL_BACKEND = 'django_ses.SESBackend'
-AWS_SES_REGION_NAME =  os.getenv("AWS_SES_REGION_NAME")
-AWS_SES_REGION_ENDPOINT = f'email.{AWS_SES_REGION_NAME}.amazonaws.com'
-AWS_SES_ACCESS_KEY_ID= os.getenv("AWS_SES_ACCESS_KEY_ID")
-AWS_SES_SECRET_ACCESS_KEY= os.getenv("AWS_SES_SECRET_ACCESS_KEY")
-USE_SES_V2 = True
-AWS_SES_FROM_EMAIL= os.getenv("EMAIL_HOST_USER")
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 465  
-# EMAIL_USE_SSL = True
-# EMAIL_USE_TLS = False
-EMAIL_HOST_USER = AWS_SES_FROM_EMAIL
-DEFAULT_FROM_EMAIL=AWS_SES_FROM_EMAIL
 
 
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+EMAIL_HOST = "smtp.office365.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=35),
@@ -251,3 +244,11 @@ TINYMCE_DEFAULT_CONFIG = {
     'selector': 'textarea',
     'theme': 'modern',
 }
+
+
+
+STRIPE_REDIRECT_DOMAIN = os.getenv('DOMAIN')
+STRIPE_PRICE_ID_PRO = os.getenv('STRIPE_ENTERPRICE_PRICE_ID')
+STRIPE_PRICE_ID_EXCLUSIVE = os.getenv('STRIPE_EXCLUSIVE_PRICE_ID')
+STRIPE_SEC_KEY = os.getenv('STRIPE_SEC_KEY')
+STRIPE_ENDPOINT_SECRET = os.getenv('STRIPE_ENDPOINT_SECRET')

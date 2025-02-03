@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.conf import settings
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -12,6 +12,7 @@ from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework import status
 from djoser.social.views import ProviderAuthView
+from django.contrib.auth import get_user_model
 
 
 def login_view(request):
@@ -111,3 +112,15 @@ class LogoutAPI(APIView):
         api_logout(request)
         return response
     
+def verify(request, token):
+  try:
+    user = get_user_model().objects.get(verification_token=token)
+
+    if user is not None:
+      user.verification_token = None
+      user.save()
+
+      api_login(request, user)
+      return redirect('/')
+  except:
+    return redirect('/')

@@ -1,4 +1,6 @@
+from email.message import EmailMessage
 import threading    
+from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
@@ -21,3 +23,50 @@ def send_html_email(subject, message, from_email, to_email,html_file):
     print("initials")
     EmailThread(msg).start()
 
+
+
+def send_confirmation_email(email, name):
+  # HTML email content
+  logi_url = settings.DOMAIN + "login"
+  if name is None:
+    name = "there"
+  html_content = f"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to HooksMaster.io</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+    <div style="max-width: 600px; margin: 0 auto;">
+    <h2 style="color: #2c3e50;">Hi {name},</h2>
+<p>Welcome to <strong>HooksMaster.io</strong>! Your journey to creating high-converting video hooks effortlessly starts here. Your account has been successfully created, and you’re ready to optimize your ads.</p>
+
+<h3 style="color: #2c3e50;">Next Steps:</h3>
+<ul>
+<li><strong>Log in:</strong> <a href="https://hooksmaster.io/login" style="color: #3498db;">Login to HooksMaster.io</a></li>
+<li><strong>Get Started:</strong> Prepare your hooks and generate winning creatives.</li>
+</ul>
+
+<p>If you need support, we’re here to help. Feel free to reach out to us at <a href="mailto:support@hooksmaster.io" style="color: #3498db;">support@hooksmaster.io</a>.</p>
+
+<p>Let’s create some high-converting hooks together!</p>
+
+<a href="https://hooksmaster.io/login" style="display: inline-block; padding: 10px 20px; background-color: #3498db; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Login Now</a>
+
+<p>Best regards,</p>
+<p><strong>The HooksMaster.io Team</strong></p>
+</div>
+</body>
+</html>
+    """
+
+  email_message = EmailMessage(
+    subject="Welcome to HooksMaster.io – Your Account is Ready!",
+    body=html_content,
+    from_email=settings.EMAIL_HOST_USER,
+    to=[email],
+  )
+  email_message.content_subtype = "html"  # This is required to send the email as HTML
+  email_message.send(fail_silently=True)

@@ -4,7 +4,7 @@ from .views import (
     AccountTokenObtainPairView,
     AccountTokenRefreshView,
     AccountTokenVerify,
-    LogoutAPI,AccountProviderAuthView
+    LogoutAPI,AccountProviderAuthView,verify
 )
 app_name='accounts'
 urlpatterns=[
@@ -13,5 +13,7 @@ urlpatterns=[
     path('token/verify/', AccountTokenVerify.as_view(),name='verify_token'),
     path('token/create/', AccountTokenObtainPairView.as_view(),name='create_token'),
     path('token/logout/', LogoutAPI.as_view(),name='logout_token'),
+    path('verify', verify,name='verify'),
+
     re_path(r'^o/(?P<provider>\S+)/$', AccountProviderAuthView.as_view(),name='provider_auth'),
 ]

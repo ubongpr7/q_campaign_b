@@ -18,10 +18,14 @@ schema_view = get_schema_view(
    public=True,
    permission_classes=(permissions.AllowAny,),
 )
+
 urlpatterns = [
    path('admin/', admin.site.urls),
-   path('account/',include('mainapps.accounts.urls',namespace='accounts'),),
+   path('accounts/',include('mainapps.accounts.urls',namespace='accounts'),),
+   path('stripe/',include('mainapps.stripe_pay.urls',namespace='stripe'),),
    path('acccount-api/',include('mainapps.accounts.api.urls'),),
+   path('ads_api/', include('mainapps.ads_manager.api.urls')),
+   path('targeting_api/', include('mainapps.targeting.api.urls')),
    
    path('auth-api/', include('djoser.urls')),
    # path('auth-token/', include('djoser.urls.jwt')),

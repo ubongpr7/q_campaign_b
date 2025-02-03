@@ -43,3 +43,5 @@ djoser
 django-ses
 django-ses[events]
 social-auth-app-django
+facebook-business
+stripe
