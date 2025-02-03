@@ -155,10 +155,10 @@ DJOSER = {
 
     'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': os.getenv('SOCIAL_AUTH_ALLOWED_REDIRECT_URIS', '').split(','),
 
-    'EMAIL': {
-        'activation': 'mainapps.accounts.email.CustomActivationEmail',
-        'password_reset': 'mainapps.accounts.email.CustomPasswordResetEmail',
-    },
+    # 'EMAIL': {
+    #     'activation': 'mainapps.accounts.email.CustomActivationEmail',
+    #     'password_reset': 'mainapps.accounts.email.CustomPasswordResetEmail',
+    # },
 }
 
 DOMAIN=os.getenv('DOMAIN')
