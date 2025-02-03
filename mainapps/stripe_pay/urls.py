@@ -4,7 +4,7 @@ app_name='stripe'
 
 urlpatterns=[
     path('subscribe/<str:price_id>',views.subscribe,name='subscribe'),
-    path('webhooks/',views.stripe_webhook,name='webhooks'),
+    path('webhook/',views.stripe_webhook,name='webhooks'),
     path("manage-subscription", views.manage_subscription, name="manage_subscription"),  # Manage subscription
     path("billing-portal", views.billing_portal, name="billing_portal"),  # Billing portal
     path("add-credits/<str:kind>", views.add_credits, name="add_credits"),  # Add credits
