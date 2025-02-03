@@ -149,8 +149,8 @@ DJOSER = {
     'USER_CREATE_PASSWORD_RETYPE': True,
     'PASSWORD_RESET_CONFIRM_RETYPE': True,
     'LOGOUT_ON_PASSWORD_CHANGE': True,
-    'EMAIL_FRONTEND_DOMAIN':'localhost:3000',
-    'EMAIL_FRONTEND_PROTOCOL':'http',
+    # 'EMAIL_FRONTEND_DOMAIN':'localhost:3000',
+    # 'EMAIL_FRONTEND_PROTOCOL':'http',
     'TOKEN_MODEL': 'rest_framework.authtoken.models.Token',  
 
     'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': os.getenv('SOCIAL_AUTH_ALLOWED_REDIRECT_URIS', '').split(','),
