@@ -7,7 +7,6 @@ class Plan(models.Model):
     stripe_price_id = models.CharField(max_length=255, null=True)
     name = models.CharField(max_length=50)
     price = models.DecimalField(max_digits=5, decimal_places=2, null=True)
-    price_per_vsl = models.DecimalField(max_digits=5, decimal_places=2, null=True)
     vsl_limit = models.IntegerField(default=0)
 
     class Meta:

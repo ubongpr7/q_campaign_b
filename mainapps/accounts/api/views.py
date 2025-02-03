@@ -143,119 +143,38 @@ class LogoutAPI(APIView):
 
 
 
-# @method_decorator(csrf_exempt, name='dispatch')
+
 class SignUpView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSignUpSerializer
 
-    def post(self, request, *args, **kwargs):
-        data = json.loads(request.body)
-        logging.debug(f"form: {data}")
-        stripe.api_key = settings.STRIPE_SEC_KEY
-
-        checkout_session_id = data['sessionId']
-        firstname = data["first_name"]
-        username = data["email"]
-        password = data["password"]
-
-        logging.info(f"data: {data}")
-        user = User.objects.filter(email=username).first()
-        logging.info(f"user: {user}")
-        if user:
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
             Token.objects.filter(user=user).delete()
-            return Response({"error": "User already exists.",'checkout_session_id':checkout_session_id}, status=status.HTTP_400_BAD_REQUEST)
-        try:
-            new_user = User.objects.create_user(
-                first_name=firstname,
-                username=username,
-                password=password,
-                email=username,
-            )
-            Token.objects.filter(user=new_user).delete()
-            logging.info(f"new user '{new_user}' created")
-        except:
-            logging.error(f"new user '{username}' creation failed")
-            return Response({"error": "User creation failed.",'checkout_session_id':checkout_session_id}, status=status.HTTP_400_BAD_REQUEST)
-        
 
-        if checkout_session_id is None:
-            free_plan = Plan.objects.get(id=3)
-            customer = stripe.Customer.create(
-                email=user.email,
-                name=user.first_name,
-            )
-            stripe_customer = StripeCustomer(
-                user=user, stripe_customer_id=customer.id
-            )
-            stripe_customer.save()
-            subscription = Subscription(
-                plan=free_plan,
-                hooks=free_plan.hook_limit,
-                merge_credits=free_plan.hook_limit ,
-                customer=stripe_customer,
-                stripe_subscription_id=None
-            )
-            subscription.save()
-            user.subscription = subscription
-
-            verification_token = str(uuid.uuid4())
-            user.verification_token = verification_token
-
-            user.save()
-
-            send_html_email(
-                subject='Welcome to QuickCampaign.io – Verify Your Email To Continue',
-                message=None,
-                from_email=settings.EMAIL_HOST_USER,
-                to_email=user.email,
-                html_file='verification.html',
-                context={
-                'first_name':
-                    user.first_name,
-                'verification_url':
-                    settings.DOMAIN
-                    + reverse('accounts:verify', kwargs={'token': verification_token}),
-                },
-            )
-            return Response({'plan':'free','success':True}, status=status.HTTP_201_CREATED)
-
-        else:
-            checkout_session = stripe.checkout.Session.retrieve(checkout_session_id)
-            stripe_customer_id = checkout_session.customer
-
-            customer_id = 0
-            try:
-                customer = StripeCustomer.objects.get(
-                stripe_customer_id=stripe_customer_id
+            # Send verification email **ONLY IF session_id is missing**
+            if not request.data.get("sessionId"):
+                send_html_email(
+                    subject="Welcome to QuickCampaign.io – Verify Your Email",
+                    message=None,
+                    from_email=settings.EMAIL_HOST_USER,
+                    to_email=user.email,
+                    html_file="verification.html",
+                    context={
+                        "first_name": user.first_name,
+                        "verification_url": settings.DOMAIN + reverse(
+                            "accounts:verify", kwargs={"token": user.verification_token}
+                        ),
+                    },
                 )
 
-                if customer is not None:
-                    customer.user = user
-                    customer.save()
-
-                customer_id = customer.id
-            except StripeCustomer.DoesNotExist:
-                new_customer = StripeCustomer(
-                user=user, stripe_customer_id=stripe_customer_id
-                )
-                new_customer.save()
-
-                customer_id = new_customer.id
-
-            try:
-                subscription = Subscription.objects.get(customer_id=customer_id)
-
-                if subscription is not None:
-                    user.subscription = subscription
-                    user.save()
-            
-            except Exception as _:
-                return Response({"error": f"User creation failed. {_}",'checkout_session_id':checkout_session_id}, status=status.HTTP_400_BAD_REQUEST)
-
-            send_confirmation_email(user.email, user.first_name)
-
-            return Response({"plan": user ,'checkout_session_id':checkout_session_id}, status=status.HTTP_201_CREATED)
-
-            
-        
+            return Response(
+                {"message": "User created successfully", "plan": "free" if not user.subscription else "paid"},
+                status=status.HTTP_201_CREATED,
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 def getCreditsInSubscription(subscription):
     credits = subscription.items.latest().price.product.metadata['credits']

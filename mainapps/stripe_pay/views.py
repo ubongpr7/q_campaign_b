@@ -54,8 +54,7 @@ def stripe_webhook(request):
             if prev_sub.stripe_subscription_id is not None:
               stripe.Subscription.delete(prev_sub.stripe_subscription_id)
 
-            prev_sub_hooks = prev_sub.hooks
-            prev_sub_merges = prev_sub.merge_credits
+            prev_sub_hooks = prev_sub.credits
         except Subscription.DoesNotExist:
           pass
 
@@ -66,8 +65,7 @@ def stripe_webhook(request):
           plan=plan,
           stripe_subscription_id=subscription_id,
           customer=customer,
-          hooks=plan.hook_limit + prev_sub_hooks,
-          merge_credits=plan.hook_limit  + prev_sub_merges
+          credits=plan.vsl_limit + prev_sub_hooks,
         )
         subscription.save()
 
@@ -149,13 +147,6 @@ def stripe_webhook(request):
               subscription.save()
               print(f'Subscription {subscription_id} was canceled.')
 
-          # Handle renewal or update
-          # elif event_object.get("status") == "active":
-          #     subscription.plan = plan
-          #     # subscription.hooks += plan.hook_limit
-          #     # subscription.merge_credits += plan.hook_limit
-          #     subscription.save()
-          #     print(f'Subscription {subscription_id} updated successfully.')
 
       except Subscription.DoesNotExist:
           print(f'Error: Subscription {subscription_id} not found.')
