@@ -28,7 +28,7 @@ urlpatterns = [
    path('targeting_api/', include('mainapps.targeting.api.urls')),
    
    path('auth-api/', include('djoser.urls')),
-   # path('auth-token/', include('djoser.urls.jwt')),
+   path('auth-token/', include('djoser.urls.jwt')),
    path('social_auth/', include('djoser.social.urls')),
    path('swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
