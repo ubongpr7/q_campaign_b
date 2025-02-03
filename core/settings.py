@@ -137,17 +137,29 @@ SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS={
     'fields':'email,first_name,last_name'
 }
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE=['email']
+import os
+from datetime import timedelta
+
+# DJOSER CONFIGURATION
 DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL': 'password/reset/confirm/{uid}/{token}',
     'USERNAME_RESET_CONFIRM_URL': 'username/reset/confirm/{uid}/{token}',
     'ACTIVATION_URL': 'activate/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': True,
-    'USER_CREATE_PASSWORD_RETYPE':True,
-    'PASSWORD_RESET_CONFIRM_RETYPE':True,
-    'LOGOUT_ON_PASSWORD_CHANGE':True,
-    'TOKEN_MODEL':None,
-    'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS':os.getenv('SOCIAL_AUTH_ALLOWED_REDIRECT_URIS').split(',')
+    'USER_CREATE_PASSWORD_RETYPE': True,
+    'PASSWORD_RESET_CONFIRM_RETYPE': True,
+    'LOGOUT_ON_PASSWORD_CHANGE': True,
+
+    'TOKEN_MODEL': 'rest_framework.authtoken.models.Token',  
+
+    'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': os.getenv('SOCIAL_AUTH_ALLOWED_REDIRECT_URIS', '').split(','),
+
+    'EMAIL': {
+        'activation': 'mainapps.accounts.email.CustomActivationEmail',
+        'password_reset': 'mainapps.accounts.email.CustomPasswordResetEmail',
+    },
 }
+
 DOMAIN=os.getenv('DOMAIN')
 SITE_NAME='FC'
 LANGUAGE_CODE = 'en-us'
