@@ -48,7 +48,7 @@ def stripe_webhook(request):
         prev_sub_hooks = 0
         prev_sub_merges = 0
         try:
-          prev_sub = Subscription.objects.get(customer_id=customer.id)
+          prev_sub = Subscription.objects.get(customer=customer)
 
           if prev_sub is not None:
             if prev_sub.stripe_subscription_id is not None:
@@ -129,9 +129,7 @@ def stripe_webhook(request):
       except StripeCustomer.DoesNotExist:
         return HttpResponse(status=404)
 
-      sub = Subscription.objects.get(customer_id=customer.id)
-      sub.hooks = 0
-      sub.merge_credits = 0
+      sub = Subscription.objects.get(customer=customer)
       sub.save()
   elif event_type == 'customer.subscription.updated':
       try:

@@ -20,7 +20,7 @@ class StripeCustomer(models.Model):
 class Subscription(models.Model):
     plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
     stripe_subscription_id = models.CharField(max_length=255, null=True)
-    customer = models.ForeignKey(StripeCustomer, on_delete=models.CASCADE, null=True)
+    customer = models.OneToOneField(StripeCustomer, on_delete=models.CASCADE, null=True)
     credits = models.IntegerField(default=0)
     current_period_end = models.IntegerField(default=0)
 
