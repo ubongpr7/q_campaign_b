@@ -266,3 +266,14 @@ STRIPE_PRICE_ID_PRO = os.getenv('STRIPE_ENTERPRICE_PRICE_ID')
 STRIPE_PRICE_ID_EXCLUSIVE = os.getenv('STRIPE_EXCLUSIVE_PRICE_ID')
 STRIPE_SEC_KEY = os.getenv('STRIPE_SEC_KEY')
 STRIPE_ENDPOINT_SECRET = os.getenv('STRIPE_ENDPOINT_SECRET')
+
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://*backend.quickcampaigns.io", 
+    "https://*www.backend.quickcampaigns.io",
+    "https://*127.0.0.1"
+]
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
