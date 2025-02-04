@@ -18,13 +18,10 @@ RUN apk add --no-cache \
     zlib-dev \
     postgresql-dev
 
-# Install Python dependencies
 COPY requirements.txt /app/
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Copy the application code to the container
 COPY . /app/
 
-# Expose the port Django will run on
 EXPOSE 7725
 

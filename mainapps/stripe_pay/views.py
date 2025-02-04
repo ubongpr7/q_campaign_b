@@ -251,7 +251,8 @@ def subscribe(request, price_id):
 
       return redirect(checkout_session.url)
     except Exception as _:
-      return redirect(reverse('account:home'))
+      print(f'subscribe error: {_}')
+      return redirect('/')
 
 @login_required
 def add_credits(request, kind):
