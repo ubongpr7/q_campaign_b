@@ -28,6 +28,7 @@ class User(AbstractUser,PermissionsMixin):
     verification_token=models.CharField(max_length=255,null=True,blank=True)
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
+    pixel_id = models.CharField(max_length=50, blank=True, null=True)
     objects = CustomUserManager()
 
     def save(self, *args, **kwargs):

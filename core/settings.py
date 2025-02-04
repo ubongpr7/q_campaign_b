@@ -62,7 +62,8 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware', 
     'corsheaders.middleware.CorsMiddleware',
 ]
-
+FACEBOOK_APP_SECRET=os.getenv('APP_SECRET')
+FACEBOOK_APP_ID=os.getenv('APP_ID')
 ROOT_URLCONF = 'core.urls'
 
 TEMPLATES = [
@@ -259,8 +260,8 @@ TINYMCE_DEFAULT_CONFIG = {
 }
 
 
-
-STRIPE_REDIRECT_DOMAIN = os.getenv('DOMAIN')
+DJ_DOMAIN= os.getenv('DJ_DOMAIN')
+STRIPE_REDIRECT_DOMAIN = os.getenv('DJ_DOMAIN')
 STRIPE_PRICE_ID_PRO = os.getenv('STRIPE_ENTERPRICE_PRICE_ID')
 STRIPE_PRICE_ID_EXCLUSIVE = os.getenv('STRIPE_EXCLUSIVE_PRICE_ID')
 STRIPE_SEC_KEY = os.getenv('STRIPE_SEC_KEY')

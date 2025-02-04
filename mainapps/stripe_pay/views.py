@@ -203,7 +203,7 @@ def billing_portal(request):
 
     session = stripe.billing_portal.Session.create(
       customer=customer.stripe_customer_id,
-      return_url=settings.DOMAIN + reverse('account:home'),
+      return_url=settings.DJ_DOMAIN + reverse('account:home'),
     )
 
     return redirect(session.url)
@@ -270,9 +270,9 @@ def add_credits(request, kind):
 
         checkout_session = stripe.checkout.Session.create(
           customer=request.user.subscription.customer.stripe_customer_id,
-          success_url=settings.DOMAIN + reverse('account:add_credits_success')
+          success_url=settings.DJ_DOMAIN + reverse('account:add_credits_success')
           + f'?amount={request.POST.get("credits_number")}&kind={kind}',
-          cancel_url=settings.DOMAIN + reverse('account:add_credits_cancel'),
+          cancel_url=settings.DJ_DOMAIN + reverse('account:add_credits_cancel'),
           payment_method_types=['card'],
           line_items=[
             {

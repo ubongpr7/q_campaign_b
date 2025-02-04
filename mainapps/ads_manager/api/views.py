@@ -4,18 +4,17 @@ from rest_framework import status
 from facebook_business.api import FacebookAdsApi
 from facebook_business.adobjects.adaccount import AdAccount
 from facebook_business.adobjects.campaign import Campaign
-from mainapps.ads_manager.models import Campaign as DBCampaign
+from mainapps.ads_manager.models import Campaign as DBCampaign, LeadForm
 from .serializers import CampaignSerializer
 import logging
-
+from django.conf import settings
 logger = logging.getLogger(__name__)
-
+app_secret=settings.FACEBOOK_APP_SECRET
+app_id=settings.FACEBOOK_APP_ID
 class CreateCampaignView(APIView):
     def post(self, request):
         try:
             data = request.data
-            app_id = data.get('app_id')
-            app_secret = data.get('app_secret')
             access_token = data.get('access_token')
             ad_account_id = data.get('ad_account_id')
             campaign_name = data.get('campaign_name')
@@ -24,6 +23,8 @@ class CreateCampaignView(APIView):
             budget_value = data.get('budget_value')
             bid_strategy = data.get('bid_strategy')
             buying_type = data.get('buying_type')
+            pixel_id = data.get('pixel_id')  # New field for pixel tracking
+            lead_form_id = data.get('lead_form_id')  # New field for lead forms
 
             FacebookAdsApi.init(app_id, app_secret, access_token, api_version='v19.0')
 
@@ -53,6 +54,8 @@ class CreateCampaignView(APIView):
                 budget_value=budget_value,
                 bid_strategy=bid_strategy,
                 buying_type=buying_type,
+                pixel_id=pixel_id,  # Save pixel_id
+                lead_form_id=lead_form_id,  # Save lead_form_id
             )
 
             serializer = CampaignSerializer(db_campaign)
@@ -62,6 +65,52 @@ class CreateCampaignView(APIView):
             logger.error(f"Error creating campaign: {e}")
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+class CreateCampaignView(APIView):
+    def post(self, request):
+        serializer = CampaignSerializer(data=request.data)
+        if serializer.is_valid():
+            data = serializer.validated_data
+            access_token = request.data.get('access_token')
+            ad_account_id = request.data.get('ad_account_id')
+
+            FacebookAdsApi.init(app_id, app_secret, access_token, api_version='v19.0')
+
+            campaign_params = {
+                "name": data['name'],
+                "objective": data['objective'],
+                "special_ad_categories": ["NONE"],
+                "buying_type": data['buying_type'],
+                "daily_budget": int(data['budget_value']) * 100 if data['budget_optimization'] else None,
+                "bid_strategy": data['bid_strategy'],
+            }
+
+            campaign = AdAccount(ad_account_id).create_campaign(fields=[AdAccount.Field.id], params=campaign_params)
+            data['campaign_id'] = campaign['id']
+            campaign = serializer.save()
+
+            return Response(CampaignSerializer(campaign).data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class TrackConversionView(APIView):
+    def post(self, request):
+        try:
+            data = request.data
+            pixel_id = data.get('pixel_id')
+            event_name = data.get('event_name')  # e.g., "Purchase", "Lead"
+            event_data = data.get('event_data')  # Additional event data
+
+            FacebookAdsApi.init(app_id, app_secret, access_token, api_version='v19.0')
+
+            # Track the event using the Facebook Pixel
+            AdAccount(pixel_id).track_event(event_name, event_data)
+
+            return Response({"status": "success"}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            logger.error(f"Error tracking conversion: {e}")
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 class GetCampaignBudgetOptimizationView(APIView):
     def post(self, request):
         try:
@@ -69,7 +118,6 @@ class GetCampaignBudgetOptimizationView(APIView):
             campaign_id = data.get('campaign_id')
             ad_account_id = data.get('ad_account_id')
             app_id = data.get('app_id')
-            app_secret = data.get('app_secret')
             access_token = data.get('access_token')
 
             FacebookAdsApi.init(app_id, app_secret, access_token, api_version='v19.0')

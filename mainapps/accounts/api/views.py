@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 import uuid
 from django.conf import settings
 from django.contrib.auth import (
@@ -24,6 +25,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
 
+import requests
 from rest_framework import (
     viewsets,
     status,
@@ -140,6 +142,38 @@ class LogoutAPI(APIView):
         api_logout(request)
         return response
     
+
+def verify_recaptcha_token(recaptcha_token):
+    """
+    Verify the reCAPTCHA token with Google's reCAPTCHA API.
+    
+    Args:
+        recaptcha_token (str): The token from the client-side reCAPTCHA.
+
+    Returns:
+        bool: True if the token is valid, False if invalid or not provided.
+    """
+    if not recaptcha_token:
+        print("No reCAPTCHA token provided. Skipping verification.")
+        return True  # Allow requests without reCAPTCHA if not enforced
+    
+    secret_key = os.getenv('RECAPTCHA_SECRET_KEY')
+
+    if not secret_key:
+        print("Error: RECAPTCHA_SECRET_KEY is missing in the app configuration.")
+        return False  # Fail verification if secret key is missing
+
+    verify_url = 'https://www.google.com/recaptcha/api/siteverify'
+    payload = {'secret': secret_key, 'response': recaptcha_token}
+    
+    try:
+        response = requests.post(verify_url, data=payload)
+        result = response.json()
+        print(f"reCAPTCHA verification result: {result}")
+        return result.get('success', False)
+    except Exception as e:
+        print(f"Error verifying reCAPTCHA token: {e}")
+        return False
 
 
 
