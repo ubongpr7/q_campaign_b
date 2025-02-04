@@ -23,5 +23,5 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 
 COPY . /app/
 
-EXPOSE 7725
+EXPOSE 7726
 
