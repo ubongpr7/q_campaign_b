@@ -23,6 +23,7 @@ class CreateAdAccountView(APIView):
     def post(self, request):
         data = request.data.copy()
         data['user'] = request.user  
+        print(request.user)
 
         serializer = AdAccountSerializer(data=data)
         if serializer.is_valid():
