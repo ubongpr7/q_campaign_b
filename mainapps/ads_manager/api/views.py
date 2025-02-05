@@ -16,23 +16,18 @@ app_secret=settings.FACEBOOK_APP_SECRET
 app_id=settings.FACEBOOK_APP_ID
 
 
-
 class CreateAdAccountView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
         data = request.data.copy()
-        # data['user'] = request.user  
-        print(request.user)
 
         serializer = AdAccountSerializer(data=data)
         if serializer.is_valid():
-            serializer.user=request.user
-            serializer.save()
-
+            serializer.save(user=request.user)  # ✅ Pass user when saving
             return Response(serializer.data, status=201)
+        
         return Response(serializer.errors, status=400)
-
 
 class CreateCampaignView(APIView):
     def post(self, request):
