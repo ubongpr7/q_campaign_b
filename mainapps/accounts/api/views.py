@@ -125,6 +125,33 @@ class LoginAPIView(APIView):
         return Response("Verify Your Identity",status=200)
 
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status, exceptions
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import authenticate
+from rest_framework import serializers
+
+class LoginAPIView(APIView):
+
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data["user"]
+
+        # Generate JWT tokens
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+
+        return Response({
+            "access": access_token,
+            "refresh": str(refresh),
+            "user": {
+                "id": user.id,
+                "email": user.email,
+                "username": user.username
+            }
+        }, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def ge_route(request):

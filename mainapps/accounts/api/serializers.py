@@ -49,24 +49,28 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    username=serializers.EmailField()
-    password=serializers.CharField()
-    def validate(self,data):
-        username=data.get("username","")
-        password=data.get("password","")
+    username = serializers.EmailField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        username = data.get("username", "")
+        password = data.get("password", "")
+
         if username and password:
-            user=authenticate(username=username,password=password)
+            user = authenticate(username=username, password=password)
             if user is not None:
                 if user.is_active:
-                    data["user"]=user
+                    data["user"] = user
                 else:
-                    message="You need to verify your account"
-                    raise exceptions.ValidationError(message)
+                    raise exceptions.ValidationError("You need to verify your account")
+            else:
+                raise exceptions.ValidationError("Invalid credentials")
         else:
-            message="All fields are required"
-            raise exceptions.ValidationError(message)
+            raise exceptions.ValidationError("All fields are required")
+
         return data
-    
+
+
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
