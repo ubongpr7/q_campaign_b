@@ -7,10 +7,30 @@ from facebook_business.adobjects.campaign import Campaign
 from mainapps.ads_manager.models import Campaign as DBCampaign, LeadForm
 from .serializers import CampaignSerializer
 import logging
+from rest_framework import generics, permissions
+from .serializers import AdAccountSerializer
+
 from django.conf import settings
 logger = logging.getLogger(__name__)
 app_secret=settings.FACEBOOK_APP_SECRET
 app_id=settings.FACEBOOK_APP_ID
+
+
+
+class CreateAdAccountView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        data = request.data.copy()
+        data['user'] = request.user.id  
+
+        serializer = AdAccountSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
+
 class CreateCampaignView(APIView):
     def post(self, request):
         try:

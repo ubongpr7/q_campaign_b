@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 
 User = get_user_model()
 
@@ -34,6 +36,19 @@ class Campaign(models.Model):
         return self.name
 
 
+class FaceBookAdAccount(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,related_name='ad_accounts')
+    ad_account_id = models.CharField(max_length=255, null=True, blank=True)
+    pixel_id = models.CharField(max_length=255, null=True, blank=True)
+    facebook_page_id = models.CharField(max_length=255, null=True, blank=True)
+    app_id = models.CharField(max_length=255, null=True, blank=True)
+    app_secret = models.CharField(max_length=255, null=True, blank=True)
+    access_token = models.CharField(max_length=255, null=True, blank=True)
+    is_bound = models.BooleanField(default=False)
+    name = models.CharField(max_length=255,null=True,blank=True)
+    business_manager_id = models.CharField(max_length=255, null=True, blank=True)
+
+
 class AdSet(models.Model):
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, related_name='adsets')
     name = models.CharField(max_length=255)
@@ -46,7 +61,6 @@ class AdSet(models.Model):
     def __str__(self):
         return self.name
 
-
 class Ad(models.Model):
     AD_STATUSES = [
         ('ACTIVE', 'Active'),
@@ -58,8 +72,7 @@ class Ad(models.Model):
         ('VIDEO', 'Video'),
         ('CAROUSEL', 'Carousel'),
     ]
-
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    account = models.ForeignKey(FaceBookAdAccount, null=True,related_name='ads', on_delete=models.CASCADE)
     adset = models.ForeignKey(AdSet, on_delete=models.CASCADE, related_name='ads')
     name = models.CharField(max_length=255)
     creative_id = models.CharField(max_length=255)
@@ -83,3 +96,16 @@ class LeadForm(models.Model):
 
     def __str__(self):
         return self.name
+
+
+
+
+
+
+
+
+@receiver(pre_save, sender=FaceBookAdAccount)
+def set_ad_account_name(sender, instance, **kwargs):
+    if not instance.name:
+        ad_account_count = FaceBookAdAccount.objects.filter(user=instance.user).count()
+        instance.name = f"Ad Account {ad_account_count + 1}"

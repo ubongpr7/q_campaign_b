@@ -1,3 +1,4 @@
+from datetime import datetime
 import random
 from django.contrib.auth.models import AbstractUser, BaseUserManager,PermissionsMixin
 from django.db import models
@@ -20,6 +21,7 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(email, password, **extra_fields)
+
 
 class User(AbstractUser,PermissionsMixin):
     email = models.EmailField(unique=True, null=False, blank=False)

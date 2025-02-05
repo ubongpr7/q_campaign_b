@@ -24,7 +24,7 @@ urlpatterns = [
    path('accounts/',include('mainapps.accounts.urls',namespace='accounts'),),
    path('stripe/',include('mainapps.stripe_pay.urls',namespace='stripe'),),
    path('acccount-api/',include('mainapps.accounts.api.urls'),),
-   path('ads_api/', include('mainapps.ads_manager.api.urls')),
+   path('ads_manager_api/', include('mainapps.ads_manager.api.urls')),
    path('targeting_api/', include('mainapps.targeting.api.urls')),
    
    path('auth-api/', include('djoser.urls')),

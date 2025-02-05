@@ -4,6 +4,8 @@ from mainapps.accounts.models import User
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
+from mainapps.ads_manager.api.serializers import AdAccountSerializer
+from mainapps.ads_manager.models import Ad
 from mainapps.stripe_pay.models import Plan, Subscription, StripeCustomer
 import stripe
 from django.conf import settings
@@ -58,15 +60,12 @@ class LoginSerializer(serializers.Serializer):
                 if user.is_active:
                     data["user"]=user
                 else:
-                    message="This account is diabled"
+                    message="You need to verify your account"
                     raise exceptions.ValidationError(message)
         else:
             message="All fields are required"
             raise exceptions.ValidationError(message)
         return data
-    
-class VerificationSerializer(serializers.Serializer):
-    code=serializers.IntegerField()
     
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
@@ -140,3 +139,23 @@ class UserSignUpSerializer(serializers.ModelSerializer):
                 user.save()
 
         return user
+
+
+
+# class AdAccountSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Ad
+#         fields = "__all__"
+
+class ProfileSerializer(serializers.ModelSerializer):
+    picture = serializers.SerializerMethodField()
+    ad_accounts = AdAccountSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'picture', 'ad_accounts']
+
+    def get_profile_picture(self, obj):
+        if obj.picture:
+            return obj.picture.url
+        return None
