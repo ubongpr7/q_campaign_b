@@ -41,11 +41,11 @@ class FaceBookAdAccount(models.Model):
     ad_account_id = models.CharField(max_length=255, null=True, blank=True)
     pixel_id = models.CharField(max_length=255, null=True, blank=True)
     facebook_page_id = models.CharField(max_length=255, null=True, blank=True)
-    app_id = models.CharField(max_length=255, null=True, blank=True)
-    app_secret = models.CharField(max_length=255, null=True, blank=True)
     access_token = models.CharField(max_length=255, null=True, blank=True)
     is_bound = models.BooleanField(default=False)
     name = models.CharField(max_length=255,null=True,blank=True)
+    account_name = models.CharField(max_length=255,null=True,blank=True)
+
     business_manager_id = models.CharField(max_length=255, null=True, blank=True)
 
 

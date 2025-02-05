@@ -31,7 +31,7 @@ class AdAccountSerializer(serializers.ModelSerializer):
         model = FaceBookAdAccount
         fields = [
             'id', 'user', 'ad_account_id', 'pixel_id', 'facebook_page_id',
-            'app_id', 'app_secret', 'access_token', 'is_bound',
+            'account_name', 'access_token', 'is_bound',
             'name', 'business_manager_id'
         ]
         extra_kwargs = {'user': {'read_only': True}}  # User should be set automatically
