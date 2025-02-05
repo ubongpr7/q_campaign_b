@@ -1,7 +1,5 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
 
 User = get_user_model()
 
@@ -48,10 +46,10 @@ class FaceBookAdAccount(models.Model):
 
     business_manager_id = models.CharField(max_length=255, null=True, blank=True)
     def save(self, *args, **kwargs):
-            if not self.name and self.user: 
-                ad_account_count = FaceBookAdAccount.objects.filter(user=self.user).count()
-                self.name = f"AdAccount-{ad_account_count + 1}"
-            super().save(*args, **kwargs)
+        if not self.name and self.user: 
+            ad_account_count = FaceBookAdAccount.objects.filter(user=self.user).count()
+            self.name = f"AdAccount-{ad_account_count + 1}"
+        super().save(*args, **kwargs)
 
 
 class AdSet(models.Model):
