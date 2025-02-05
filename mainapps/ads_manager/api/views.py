@@ -28,6 +28,8 @@ class CreateAdAccountView(APIView):
         serializer = AdAccountSerializer(data=data)
         if serializer.is_valid():
             serializer.user=request.user
+            serializer.save()
+
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
 
