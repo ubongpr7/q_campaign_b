@@ -48,8 +48,10 @@ class FaceBookAdAccount(models.Model):
     def save(self, *args, **kwargs):
         if not self.name and self.user: 
             ad_account_count = FaceBookAdAccount.objects.filter(user=self.user).count()
-            self.name = f"AdAccount-{ad_account_count + 1}"
+            self.name = f"AdAccount {ad_account_count + 1}"
         super().save(*args, **kwargs)
+    def __str__(self):
+        return f"{self.name}  for {self.account_name}"
 
 
 class AdSet(models.Model):
