@@ -49,7 +49,7 @@ class AdAccountViewSet(viewsets.ModelViewSet):
     """
     serializer_class = AdAccountSerializer
     permission_classes = [permissions.IsAuthenticated]  # Ensure only logged-in users can access
-
+    # queryset = FaceBookAdAccount.objects.all()  # ✅ Explicitly specify queryset
     def perform_create(self, serializer):
         """Override to associate the created object with the authenticated user."""
         serializer.save(user=self.request.user)

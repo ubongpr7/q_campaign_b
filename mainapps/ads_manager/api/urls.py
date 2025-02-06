@@ -6,7 +6,7 @@ from .views import (
       AdAccountViewSet)
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
-router.register(r'ad-accounts', AdAccountViewSet)  # Creates all CRUD routes
+router.register(r'ad-accounts', AdAccountViewSet,basename='ad-account')  # Creates all CRUD routes
 
 urlpatterns = [
     path('campaigns/create/', CreateCampaignView.as_view(), name='create_campaign'),
