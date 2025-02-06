@@ -45,11 +45,11 @@ class FaceBookAdAccount(models.Model):
     account_name = models.CharField(max_length=255,null=True,blank=True)
 
     business_manager_id = models.CharField(max_length=255, null=True, blank=True)
-    # def save(self, *args, **kwargs):
-    #     if not self.name and self.user: 
-    #         ad_account_count = FaceBookAdAccount.objects.filter(user=self.user).count()
-    #         self.name = f"AdAccount-{ad_account_count + 1}"
-    #     super().save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        if not self.name and self.user: 
+            ad_account_count = FaceBookAdAccount.objects.filter(user=self.user).count()
+            self.name = f"AdAccount-{ad_account_count + 1}"
+        super().save(*args, **kwargs)
 
 
 class AdSet(models.Model):
