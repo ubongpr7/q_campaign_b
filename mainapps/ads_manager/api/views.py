@@ -4,13 +4,14 @@ from rest_framework import status
 from facebook_business.api import FacebookAdsApi
 from facebook_business.adobjects.adaccount import AdAccount
 from facebook_business.adobjects.campaign import Campaign
-from mainapps.ads_manager.models import Campaign as DBCampaign, LeadForm
+from mainapps.ads_manager.models import Campaign as DBCampaign, FaceBookAdAccount, LeadForm
 from .serializers import CampaignSerializer
 import logging
 from rest_framework import generics, permissions
 from .serializers import AdAccountSerializer
 
 from django.conf import settings
+from rest_framework import viewsets, permissions
 logger = logging.getLogger(__name__)
 app_secret=settings.FACEBOOK_APP_SECRET
 app_id=settings.FACEBOOK_APP_ID
@@ -24,10 +25,37 @@ class CreateAdAccountView(APIView):
 
         serializer = AdAccountSerializer(data=data)
         if serializer.is_valid():
-            serializer.save(user=request.user)  # ✅ Pass user when saving
+            user=request.user
+            serializer.save(user=user)
+            access_token = serializer.validated_data.get("access_token")
+            if access_token:
+                user.access_token = access_token
+                user.save()
             return Response(serializer.data, status=201)
         
         return Response(serializer.errors, status=400)
+
+class AdAccountViewSet(viewsets.ModelViewSet):
+    """
+    API endpoints for CRUD operations on Facebook Ad Accounts.
+
+
+        - HTTP Method	Endpoint	Description
+            - GET	/ad-accounts/	List all ad accounts
+            - POST	/ad-accounts/	Create a new ad account
+            - GET	/ad-accounts/{id}/	Retrieve a single ad account
+            - PUT/PATCH	//ad-accounts/{id}/	Update an ad account
+            - DELETE	/ad-accounts/{id}/	Delete an ad account
+    """
+    serializer_class = AdAccountSerializer
+    permission_classes = [permissions.IsAuthenticated]  # Ensure only logged-in users can access
+
+    def perform_create(self, serializer):
+        """Override to associate the created object with the authenticated user."""
+        serializer.save(user=self.request.user)
+    def get_queryset(self):
+        """Return only the ad accounts owned by the authenticated user."""
+        return FaceBookAdAccount.objects.filter(user=self.request.user)
 
 class CreateCampaignView(APIView):
     def post(self, request):

@@ -32,6 +32,7 @@ class User(AbstractUser,PermissionsMixin):
     REQUIRED_FIELDS = []
     pixel_id = models.CharField(max_length=50, blank=True, null=True)
     objects = CustomUserManager()
+    access_token = models.CharField(max_length=255, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         self.username = self.email
