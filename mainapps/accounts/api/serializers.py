@@ -35,10 +35,14 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         data = super().validate(attrs)
 
         user = self.user  
-
         data.update({
+            'id': user.id,
+            'username': user.username,
+            'first_name': user.first_name,
             'access_token': user.access_token,
         })
+
+        return data 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     email=serializers.EmailField(required=True,validators=[UniqueValidator(queryset=User.objects.all())])
     password=serializers.EmailField(required=True,validators=[UniqueValidator(queryset=User.objects.all())])
