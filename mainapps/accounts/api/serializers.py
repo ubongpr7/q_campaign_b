@@ -20,16 +20,16 @@ User=get_user_model()
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
+    # def get_token(cls, user):
+    #     token = super().get_token(user)
 
-        # Add custom claims
-        token['username'] = user.username
-        token['first_name'] = user.first_name
-        token['access_token'] = user.access_token
-        token['id'] = user.id
-        print(token)
-        return token 
+    #     # Add custom claims
+    #     token['username'] = user.username
+    #     token['first_name'] = user.first_name
+    #     token['access_token'] = user.access_token
+    #     token['id'] = user.id
+    #     print(token)
+    #     return token 
 
     def validate(self, attrs):
         data = super().validate(attrs)
