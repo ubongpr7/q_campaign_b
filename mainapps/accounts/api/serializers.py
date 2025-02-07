@@ -26,6 +26,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['first_name'] = user.first_name
         token['access_token'] = user.access_token
         token['id'] = user.id
+        print(token)
         return token 
 
 User=get_user_model()
