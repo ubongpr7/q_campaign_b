@@ -35,3 +35,4 @@ class AdAccountSerializer(serializers.ModelSerializer):
             'name', 'business_manager_id'
         ]
         extra_kwargs = {'user': {'read_only': True}}  # User should be set automatically
+

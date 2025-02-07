@@ -4,20 +4,31 @@ from mainapps.accounts.models import User
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
 from mainapps.ads_manager.api.serializers import AdAccountSerializer
 from mainapps.ads_manager.models import Ad
 from mainapps.stripe_pay.models import Plan, Subscription, StripeCustomer
 import stripe
 from django.conf import settings
 import uuid
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from django.contrib.auth import get_user_model
 
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
 
-class MyUserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model=User
-        fields="__all__"
+        # Add custom claims
+        token['username'] = user.username
+        token['first_name'] = user.first_name
+        token['access_token'] = user.access_token
+        token['id'] = user.id
+        return token 
+
+User=get_user_model()
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     email=serializers.EmailField(required=True,validators=[UniqueValidator(queryset=User.objects.all())])
@@ -83,7 +94,10 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['id'] = user.id
         return token 
 
-
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email','access_token'] 
 class ProfilePictureUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()

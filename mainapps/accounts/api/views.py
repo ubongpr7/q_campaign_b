@@ -153,6 +153,11 @@ class LoginAPIView(APIView):
             }
         }, status=status.HTTP_200_OK)
 
+class UserDetailView(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
 @api_view(['GET'])
 def ge_route(request):
     route=['/api/token','api/token/refresh']
