@@ -41,7 +41,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
             'first_name': user.first_name,
             'access_token': user.access_token,
         })
-
+        
         return data 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     email=serializers.EmailField(required=True,validators=[UniqueValidator(queryset=User.objects.all())])
