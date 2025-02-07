@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 User = get_user_model()
 
@@ -43,7 +44,7 @@ class FaceBookAdAccount(models.Model):
     is_bound = models.BooleanField(default=False)
     name = models.CharField(max_length=255,null=True,blank=True)
     account_name = models.CharField(max_length=255,null=True,blank=True)
-
+    created_at = models.DateTimeField(default=timezone.now)
     business_manager_id = models.CharField(max_length=255, null=True, blank=True)
     def save(self, *args, **kwargs):
         if not self.name and self.user: 
@@ -53,6 +54,8 @@ class FaceBookAdAccount(models.Model):
     def __str__(self):
         return f"{self.name}  for {self.account_name}"
 
+    class Meta:
+        ordering=['-created_at']
 
 class AdSet(models.Model):
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, related_name='adsets')
