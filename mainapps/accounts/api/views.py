@@ -96,10 +96,6 @@ class DeleteUserView(APIView):
                 {"error": "An error occurred while deleting the user", "details": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-class AuthApi(viewsets.ModelViewSet):
-    queryset=User.objects.all()
-    serializer_class=MyUserSerializer
-    permission_classes=[permissions.IsAuthenticated,]
 
 class RegistrationAPI(APIView):
     
