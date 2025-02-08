@@ -17,10 +17,10 @@ urlpatterns = [
     path('get_campaign_budget_optimization/', GetCampaignBudgetOptimizationView.as_view(), name='get_campaign_budget_optimization'),
     path('ad-accounts/create/', CreateAdAccountView.as_view(), name='create-ad-account'),
     path('', include(router.urls)),  # Include API routes,
-    path('adsets/create/', CreateAdSetView.as_view(), name='create-adset'),
+    path('adsets/create/', debug_adset, name='create-adset'),
     path('platforms/', PlatformListView.as_view(), name='platform-list'),
     path('placements/', PlacementListView.as_view(), name='placement-list'),
-    path("debug-adset/", debug_adset, name="debug_adset"),
+    # path("debug-adset/", debug_adset, name="debug_adset"),
 
 
 ]
