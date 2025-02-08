@@ -18,20 +18,15 @@ app_id=settings.FACEBOOK_APP_ID
 
 from rest_framework import generics
 from rest_framework.filters import SearchFilter
-from django_filters.rest_framework import DjangoFilterBackend
 from .serializers import PlatformSerializer, PlacementSerializer
 
 class PlatformListView(generics.ListAPIView):
     queryset = Platform.objects.all()
     serializer_class = PlatformSerializer
-    filter_backends = [DjangoFilterBackend, SearchFilter]
-    filterset_fields = ['name']
-    search_fields = ['name']
 
 class PlacementListView(generics.ListAPIView):
     queryset = Placement.objects.all()
     serializer_class = PlacementSerializer
-    filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_fields = ['name', 'platform__name']
     search_fields = ['name', 'platform__name']
 
