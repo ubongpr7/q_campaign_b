@@ -146,7 +146,6 @@ class AdSet(models.Model):
     age_max = models.IntegerField(default=65, null=True, blank=True)
     location = models.CharField(max_length=255, null=True, blank=True)
     
-    # ManyToMany Relationships
     custom_audiences = models.ManyToManyField("CustomAudience", related_name="ad_sets", blank=True)
     flexible_specs = models.ManyToManyField("FlexibleSpec", related_name="ad_sets", blank=True)
     placements = models.ManyToManyField("Placement", related_name="ad_sets", blank=True)
@@ -219,7 +218,6 @@ class Ad(models.Model):
         ('VIDEO', 'Video'),
         ('CAROUSEL', 'Carousel'),
     ]
-    # account = models.ForeignKey(FaceBookAdAccount, null=True,related_name='ads', on_delete=models.CASCADE)
     adset = models.ForeignKey(AdSet, on_delete=models.CASCADE, related_name='ads')
     name = models.CharField(max_length=255)
     creative_id = models.CharField(max_length=255)
