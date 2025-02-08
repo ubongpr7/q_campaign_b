@@ -4,7 +4,9 @@ from .views import (
     CreateAdSetView,
       CreateCampaignView, 
       GetCampaignBudgetOptimizationView,
-      AdAccountViewSet)
+      AdAccountViewSet,
+    PlacementListView,
+    PlatformListView)
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register(r'ad-accounts', AdAccountViewSet,basename='ad-accounts')  # Creates all CRUD routes
@@ -15,4 +17,7 @@ urlpatterns = [
     path('ad-accounts/create/', CreateAdAccountView.as_view(), name='create-ad-account'),
     path('', include(router.urls)),  # Include API routes,
     path('adsets/create/', CreateAdSetView.as_view(), name='create-adset'),
+    path('platforms/', PlatformListView.as_view(), name='platform-list'),
+    path('placements/', PlacementListView.as_view(), name='placement-list'),
+
 ]

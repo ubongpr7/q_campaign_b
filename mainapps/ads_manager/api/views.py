@@ -4,7 +4,7 @@ from rest_framework import status
 from facebook_business.api import FacebookAdsApi
 from facebook_business.adobjects.adaccount import AdAccount
 from facebook_business.adobjects.campaign import Campaign
-from ..models import Campaign as DBCampaign, FaceBookAdAccount, LeadForm,AdSet
+from ..models import Campaign as DBCampaign, FaceBookAdAccount, LeadForm,AdSet, Placement, Platform
 import logging
 from rest_framework import generics, permissions
 from .serializers import AdAccountSerializer,AdSetSerializer,CampaignSerializer
@@ -16,6 +16,24 @@ logger = logging.getLogger(__name__)
 app_secret=settings.FACEBOOK_APP_SECRET
 app_id=settings.FACEBOOK_APP_ID
 
+from rest_framework import generics
+from rest_framework.filters import SearchFilter
+from django_filters.rest_framework import DjangoFilterBackend
+from .serializers import PlatformSerializer, PlacementSerializer
+
+class PlatformListView(generics.ListAPIView):
+    queryset = Platform.objects.all()
+    serializer_class = PlatformSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['name']
+    search_fields = ['name']
+
+class PlacementListView(generics.ListAPIView):
+    queryset = Placement.objects.all()
+    serializer_class = PlacementSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['name', 'platform__name']
+    search_fields = ['name', 'platform__name']
 
 class CreateAdSetView(generics.CreateAPIView):
     """
@@ -49,6 +67,7 @@ class CreateAdSetView(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]  
 
     def perform_create(self, serializer):
+        print(self.request.data)
         campaign_id = self.request.data.get('campaign')  
         serializer.save(campaign_id=campaign_id)
 

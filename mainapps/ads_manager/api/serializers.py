@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from mainapps.ads_manager.models import Campaign, LeadForm, AdSet, Ad,FaceBookAdAccount
-
+from mainapps.ads_manager.models import Campaign, LeadForm, AdSet, Ad,FaceBookAdAccount,Platform, Placement
 
 class CampaignSerializer(serializers.ModelSerializer):
     class Meta:
@@ -37,3 +36,17 @@ class AdSetSerializer(serializers.ModelSerializer):
         model = AdSet
         fields = '__all__'
         read_only_fields = ['created_at', 'updated_at']
+
+
+
+class PlatformSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Platform
+        fields = ['id', 'name']
+
+class PlacementSerializer(serializers.ModelSerializer):
+    platform_name = serializers.CharField(source="platform.name", read_only=True)
+
+    class Meta:
+        model = Placement
+        fields = ['id', 'name', 'platform', 'platform_name']
