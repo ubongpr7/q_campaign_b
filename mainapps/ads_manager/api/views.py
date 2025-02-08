@@ -8,7 +8,7 @@ from ..models import Campaign as DBCampaign, FaceBookAdAccount, LeadForm,AdSet, 
 import logging
 from rest_framework import generics, permissions
 from .serializers import AdAccountSerializer,AdSetSerializer,CampaignSerializer
-
+from rest_framework.parsers import MultiPartParser, FormParser
 
 from django.conf import settings
 from rest_framework import viewsets, permissions
@@ -57,6 +57,7 @@ class CreateAdSetView(generics.CreateAPIView):
 }
 
     """
+    parser_classes = (MultiPartParser, FormParser)  
     queryset = AdSet.objects.all()
     serializer_class = AdSetSerializer
     permission_classes = [permissions.IsAuthenticated]  
