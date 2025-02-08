@@ -14,12 +14,6 @@ class LeadFormSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class AdSetSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AdSet
-        fields = '__all__'
-
-
 class AdSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ad
@@ -36,3 +30,10 @@ class AdAccountSerializer(serializers.ModelSerializer):
         ]
         extra_kwargs = {'user': {'read_only': True}}  # User should be set automatically
 
+from rest_framework import serializers
+
+class AdSetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AdSet
+        fields = '__all__'
+        read_only_fields = ['created_at', 'updated_at']

@@ -4,17 +4,53 @@ from rest_framework import status
 from facebook_business.api import FacebookAdsApi
 from facebook_business.adobjects.adaccount import AdAccount
 from facebook_business.adobjects.campaign import Campaign
-from mainapps.ads_manager.models import Campaign as DBCampaign, FaceBookAdAccount, LeadForm
-from .serializers import CampaignSerializer
+from ..models import Campaign as DBCampaign, FaceBookAdAccount, LeadForm,AdSet
 import logging
 from rest_framework import generics, permissions
-from .serializers import AdAccountSerializer
+from .serializers import AdAccountSerializer,AdSetSerializer,CampaignSerializer
+
 
 from django.conf import settings
 from rest_framework import viewsets, permissions
 logger = logging.getLogger(__name__)
 app_secret=settings.FACEBOOK_APP_SECRET
 app_id=settings.FACEBOOK_APP_ID
+
+
+class CreateAdSetView(generics.CreateAPIView):
+    """
+    - {
+    "campaign": 1,
+    "name": "Test Ad Set",
+    "ad_account_id": "123456789",
+    "facebook_page_id": "987654321",
+    "pixel_id": "654321",
+    "objective": "Conversions",
+    "ad_set_budget_optimization": "DAILY_BUDGET",
+    "ad_set_budget_value": 100.00,
+    "ad_set_bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+    "bid_amount": 5.00,
+    "gender": "All",
+    "age_min": 18,
+    "age_max": 45,
+    "location": "USA",
+    "custom_audiences": ["audience_1", "audience_2"],
+    "platforms": {"facebook": true, "instagram": false},
+    "placements": {"feed": true, "story": false},
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "event_type": "PURCHASE",
+    "ad_set_end_time": "2025-01-01T00:00:00Z",
+    "is_cbo": false
+}
+
+    """
+    queryset = AdSet.objects.all()
+    serializer_class = AdSetSerializer
+    permission_classes = [permissions.IsAuthenticated]  
+
+    def perform_create(self, serializer):
+        campaign_id = self.request.data.get('campaign')  
+        serializer.save(campaign_id=campaign_id)
 
 
 class CreateAdAccountView(APIView):
@@ -111,31 +147,6 @@ class CreateCampaignView(APIView):
             logger.error(f"Error creating campaign: {e}")
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-class CreateCampaignView(APIView):
-    def post(self, request):
-        serializer = CampaignSerializer(data=request.data)
-        if serializer.is_valid():
-            data = serializer.validated_data
-            access_token = request.data.get('access_token')
-            ad_account_id = request.data.get('ad_account_id')
-
-            FacebookAdsApi.init(app_id, app_secret, access_token, api_version='v19.0')
-
-            campaign_params = {
-                "name": data['name'],
-                "objective": data['objective'],
-                "special_ad_categories": ["NONE"],
-                "buying_type": data['buying_type'],
-                "daily_budget": int(data['budget_value']) * 100 if data['budget_optimization'] else None,
-                "bid_strategy": data['bid_strategy'],
-            }
-
-            campaign = AdAccount(ad_account_id).create_campaign(fields=[AdAccount.Field.id], params=campaign_params)
-            data['campaign_id'] = campaign['id']
-            campaign = serializer.save()
-
-            return Response(CampaignSerializer(campaign).data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class TrackConversionView(APIView):
