@@ -6,7 +6,8 @@ from .views import (
       GetCampaignBudgetOptimizationView,
       AdAccountViewSet,
     PlacementListView,
-    PlatformListView)
+    PlatformListView,
+    debug_adset)
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register(r'ad-accounts', AdAccountViewSet,basename='ad-accounts')  # Creates all CRUD routes
@@ -19,5 +20,7 @@ urlpatterns = [
     path('adsets/create/', CreateAdSetView.as_view(), name='create-adset'),
     path('platforms/', PlatformListView.as_view(), name='platform-list'),
     path('placements/', PlacementListView.as_view(), name='placement-list'),
+    path("debug-adset/", debug_adset, name="debug_adset"),
+
 
 ]

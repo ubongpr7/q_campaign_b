@@ -10,6 +10,9 @@ from rest_framework import generics, permissions
 from .serializers import AdAccountSerializer,AdSetSerializer,CampaignSerializer
 from rest_framework.parsers import MultiPartParser, FormParser
 
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
 from django.conf import settings
 from rest_framework import viewsets, permissions
 logger = logging.getLogger(__name__)
@@ -29,6 +32,19 @@ class PlacementListView(generics.ListAPIView):
     serializer_class = PlacementSerializer
     filterset_fields = ['name', 'platform__name']
     search_fields = ['name', 'platform__name']
+
+
+@csrf_exempt  # Disable CSRF for testing (only use in development)
+def debug_adset(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            print("Received Data:", data)  # Print the data to console
+            return JsonResponse({"message": "Data received", "data": data}, status=200)
+        except json.JSONDecodeError as e:
+            return JsonResponse({"error": "Invalid JSON", "details": str(e)}, status=400)
+    
+    return JsonResponse({"error": "Invalid request method"}, status=405)
 
 class CreateAdSetView(generics.CreateAPIView):
     """
